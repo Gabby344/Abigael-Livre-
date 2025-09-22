@@ -13,8 +13,27 @@
       color: #333;
       padding: 20px;
       text-align: center;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
     }
-    h1 { color: #d94f70; font-size: 2em; }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    h1 {
+      color: #d94f70;
+      font-size: 2em;
+      position: relative;
+    }
+    h1:hover::after {
+      content: "« Chaque mot est une lumière dans le cœur. »";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.9em;
+      color: #777;
+      margin-top: 5px;
+    }
     input, textarea {
       width: 90%; padding: 10px; margin: 10px 0;
       border-radius: 5px; border: 1px solid #ccc; font-size: 1em;
@@ -22,14 +41,34 @@
     button {
       padding: 8px 16px; background-color: #d94f70; color: white;
       border: none; border-radius: 5px; cursor: pointer; margin: 5px;
+      transition: transform 0.2s;
     }
-    button:hover { background-color: #c03b5f; }
+    button:hover {
+      background-color: #c03b5f;
+      transform: scale(1.05);
+    }
     .page {
       background: #fff; border: 1px solid #ddd; border-radius: 8px;
       padding: 15px; margin: 10px auto; width: 90%; text-align: left;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      animation: slideIn 0.5s ease-out;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     footer { margin-top: 40px; font-size: 0.9em; color: #777; }
+
+    #musicToggle {
+      background-color: #eee;
+      color: #d94f70;
+      border: 1px solid #d94f70;
+      margin-top: 10px;
+    }
+    #musicToggle:hover {
+      background-color: #d94f70;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -42,6 +81,11 @@
     <button type="submit">Ajouter au livre</button>
   </form>
 
+  <button id="musicToggle">🎵 Activer la musique</button>
+  <audio id="backgroundMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6b9b7f3e6c.mp3?filename=gentle-piano-ambient-11094.mp3" type="audio/mpeg">
+  </audio>
+
   <div id="book"></div>
 
   <footer>Conçu par <strong>Gabby Umba</strong> 💻✨</footer>
@@ -51,7 +95,7 @@
       apiKey: "AIzaSyAuHPWVOkd96xPqKQ_K1cC4n4ihuPfuNFQ",
       authDomain: "abiga-1718.firebaseapp.com",
       projectId: "abiga-1718",
-      storageBucket: "abiga-1718.firebasestorage.app",
+      storageBucket: "abiga-1718.appspot.com",
       messagingSenderId: "103455679291",
       appId: "1:103455679291:web:eda13441fedfce226d4d1e"
     };
@@ -61,6 +105,18 @@
 
     const form = document.getElementById('testimonialForm');
     const book = document.getElementById('book');
+    const musicToggle = document.getElementById('musicToggle');
+    const backgroundMusic = document.getElementById('backgroundMusic');
+
+    musicToggle.addEventListener('click', () => {
+      if (backgroundMusic.paused) {
+        backgroundMusic.play();
+        musicToggle.textContent = "🎵 Musique activée";
+      } else {
+        backgroundMusic.pause();
+        musicToggle.textContent = "🎵 Activer la musique";
+      }
+    });
 
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
