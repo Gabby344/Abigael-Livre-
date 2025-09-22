@@ -46,18 +46,22 @@
 
   <footer> Conçu par <strong>Gabby Umba</strong> 💻✨</footer>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "TA_CLE_API",
-      authDomain: "TON_PROJET.firebaseapp.com",
-      projectId: "TON_PROJET",
-      storageBucket: "TON_PROJET.appspot.com",
-      messagingSenderId: "TON_ID",
-      appId: "TON_APP_ID"
-    };
+<script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAuHPWVOkd96xPqKQ_K1cC4n4ihuPfuNFQ",
+    authDomain: "abiga-1718.firebaseapp.com",
+    projectId: "abiga-1718",
+    storageBucket: "abiga-1718.firebasestorage.app",
+    messagingSenderId: "103455679291",
+    appId: "1:103455679291:web:eda13441fedfce226d4d1e"
+  };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
 
     const form = document.getElementById('testimonialForm');
     const book = document.getElementById('book');
