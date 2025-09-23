@@ -182,6 +182,7 @@
 
   <footer>Conçu par <strong>Gabby Umba</strong> 💻✨</footer>
 
+  <!-- Script Firebase -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAuHPWVOkd96xPqKQ_K1cC4n4ihuPfuNFQ",
@@ -220,12 +221,23 @@
         return;
       }
 
-      await db.collection("testimonials").add({ name, message, timestamp: Date.now() });
-      form.reset();
+      try {
+        await db.collection("testimonials").add({ name, message, timestamp: Date.now() });
+        form.reset();
+      } catch (error) {
+        console.error("Erreur lors de l'enregistrement :", error);
+        alert("Une erreur est survenue. Réessaie plus tard.");
+      }
     });
 
     db.collection("testimonials").orderBy("timestamp", "desc").onSnapshot(snapshot => {
       book.innerHTML = "";
+
+      if (snapshot.empty) {
+        book.innerHTML = "<p>Aucun témoignage pour le moment. Sois le premier à écrire 💌</p>";
+        return;
+      }
+
       snapshot.forEach(doc => {
         const data = doc.data();
         const id = doc.id;
@@ -234,14 +246,4 @@
         page.innerHTML = `
           <strong>${data.name}</strong> écrit :<br>
           <div id="msg-${id}">${data.message}</div>
-          <button onclick="editMessage('${id}', '${data.message.replace(/'/g, "\\'")}')">Modifier</button>
-          <button onclick="deleteMessage('${id}')">Supprimer</button>
-        `;
-        book.appendChild(page);
-      });
-    });
-
-    function editMessage(id, currentMessage) {
-      const newMessage = prompt("Modifie ton message :", currentMessage);
-      if (newMessage && newMessage.trim().length >= 5) {
-        db.collection("testimonials").doc(id).update({ message: newMessage.trim() });
+          <button onclick="editMessage('${id}', '${data.message.replace(/'/g, "\\'")}')">Modifier</
