@@ -5,21 +5,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Livre des témoignages pour Abigael</title>
 
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Open+Sans&display=swap" rel="stylesheet">
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #fffaf0;
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(to right, #fffaf0, #ffe4e1);
       color: #333;
       padding: 20px;
       text-align: center;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .hero {
+      position: relative;
+      width: 100%;
+      max-height: 400px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .hero-img {
+      width: 100%;
+      object-fit: cover;
+      filter: brightness(80%);
+      max-height: 400px;
+    }
+
+    .hero-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 20px 40px;
+      border-radius: 12px;
+    }
+
+    .hero-text h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .hero-text p {
+      font-size: 18px;
+      font-style: italic;
     }
 
     h1 {
       color: #d94f70;
+      font-size: 2em;
+      position: relative;
     }
 
     input, textarea {
@@ -38,6 +87,13 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin: 5px;
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #c03b5f;
+      transform: scale(1.05);
     }
 
     .page {
@@ -48,6 +104,7 @@
       margin: 10px auto;
       width: 90%;
       text-align: left;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     footer {
@@ -55,22 +112,58 @@
       font-size: 0.9em;
       color: #777;
     }
+
+    #musicToggle {
+      background-color: #eee;
+      color: #d94f70;
+      border: 1px solid #d94f70;
+      margin-top: 10px;
+    }
+
+    #musicToggle:hover {
+      background-color: #d94f70;
+      color: white;
+    }
   </style>
 </head>
 <body>
 
-  <h1>📖 Livre des témoignages pour Abigael Kabelu</h1>
+  <!-- Bannière d’accueil -->
+  <section class="hero">
+    <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="hero-img">
+    <div class="hero-text">
+      <h1>🌸 Abigaelle Kabelu</h1>
+      <p>“Une lumière douce dans nos vies, un sourire qui inspire.”</p>
+    </div>
+  </section>
+
+  <h1>📖 Livre des témoignages pour Abigael Kabelu 🎂</h1>
   <p>Écris un mot doux, un souvenir, ou une bénédiction pour elle.</p>
 
+  <!-- Formulaire -->
   <form id="testimonialForm">
     <input type="text" id="name" placeholder="Ton prénom" required />
     <textarea id="message" rows="4" placeholder="Ton message pour Abigael" required></textarea>
     <button type="submit">Ajouter au livre</button>
   </form>
 
+  <!-- Lien vers livre imprimable -->
+  <div style="text-align:center; margin-top:20px;">
+    <a href="livre.html" style="color:#a03c6f; font-style:italic; font-size:16px;">
+      📖 Voir le livre complet imprimable
+    </a>
+  </div>
+
+  <!-- Musique -->
+  <button id="musicToggle">🎵 Activer la musique</button>
+  <audio id="backgroundMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6b9b7f3e6c.mp3?filename=gentle-piano-ambient-11094.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Témoignages -->
   <div id="book"></div>
 
-  <footer>Conçu par <strong>Gabby Umba</strong></footer>
+  <footer>Conçu par <strong>Gabby Umba</strong> 💻✨</footer>
 
   <script>
     const firebaseConfig = {
@@ -87,6 +180,18 @@
 
     const form = document.getElementById('testimonialForm');
     const book = document.getElementById('book');
+    const musicToggle = document.getElementById('musicToggle');
+    const backgroundMusic = document.getElementById('backgroundMusic');
+
+    musicToggle.addEventListener('click', () => {
+      if (backgroundMusic.paused) {
+        backgroundMusic.play();
+        musicToggle.textContent = "🎵 Musique activée";
+      } else {
+        backgroundMusic.pause();
+        musicToggle.textContent = "🎵 Activer la musique";
+      }
+    });
 
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -102,19 +207,30 @@
       form.reset();
     });
 
-    db.collection("testimonials").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+    db.collection("testimonials").onSnapshot(snapshot => {
       book.innerHTML = "";
+
+      if (snapshot.empty) {
+        book.innerHTML = "<p>Aucun témoignage pour le moment. Sois le premier à écrire 💌</p>";
+        return;
+      }
+
       snapshot.forEach(doc => {
         const data = doc.data();
+        const id = doc.id;
+
+        const name = data.name || "Anonyme";
+        const message = data.message || "(Message vide)";
+        const date = data.timestamp
+          ? new Date(data.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+          : "Date inconnue";
+
         const page = document.createElement('div');
         page.className = 'page';
         page.innerHTML = `
-          <strong>${data.name || "Anonyme"}</strong> écrit :<br>
-          <p>${data.message}</p>
+          <strong>${name}</strong> écrit le ${date} :<br>
+          <div id="msg-${id}">${message}</div>
+          <button onclick="editMessage('${id}', '${message.replace(/'/g, "\\'")}')">Modifier</button>
+          <button onclick="deleteMessage('${id}')">Supprimer</button>
         `;
-        book.appendChild(page);
-      });
-    });
-  </script>
-</body>
-</html>
+        book.appendChild(page
