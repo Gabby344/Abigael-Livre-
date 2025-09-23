@@ -117,7 +117,7 @@
   const db = firebase.firestore();
 
   const container = document.getElementById("temoignages-container");
-  const contributeurs = [];
+  const contributeurs = new Set(); // Utilise un Set pour éviter les doublons
 
   db.collection("testimonials").orderBy("timestamp", "asc").get().then(snapshot => {
     snapshot.forEach(doc => {
@@ -136,8 +136,8 @@
       `;
 
       container.appendChild(page);
-      if (!contributeurs.includes(data.name)) {
-        contributeurs.push(data.name);
+      if (data.name && typeof data.name === "string") {
+        contributeurs.add(data.name.trim());
       }
     });
 
@@ -147,12 +147,13 @@
     indexPage.innerHTML = `
       <h2>🌟 Table des contributeurs</h2>
       <ul style="font-size:18px; line-height:1.6; padding-left:20px;">
-        ${contributeurs.map(nom => `<li>${nom}</li>`).join("")}
+        ${[...contributeurs].sort().map(nom => `<li>${nom}</li>`).join("")}
       </ul>
     `;
     container.appendChild(indexPage);
   });
 </script>
+
 
 </body>
 </html>
