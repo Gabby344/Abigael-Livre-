@@ -23,6 +23,14 @@
       font-size: 2em;
     }
 
+    .abi-photo {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
     input, textarea {
       width: 90%;
       padding: 10px;
@@ -60,6 +68,9 @@
   </style>
 </head>
 <body>
+
+  <!-- Photo d’Abigaelle -->
+  <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="abi-photo">
 
   <h1>📖 Livre des témoignages pour Abigael Kabelu</h1>
   <p>Écris un mot doux, un souvenir, ou une bénédiction pour elle.</p>
@@ -104,7 +115,7 @@
       form.reset();
     });
 
-    db.collection("testimonials").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+    db.collection("testimonials").onSnapshot(snapshot => {
       book.innerHTML = "";
       snapshot.forEach(doc => {
         const data = doc.data();
