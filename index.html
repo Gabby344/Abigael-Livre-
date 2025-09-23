@@ -4,64 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Livre des témoignages pour Abigael</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Open+Sans&display=swap" rel="stylesheet">
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+
   <style>
-    .hero {
-  position: relative;
-  width: 100%;
-  max-height: 400px;
-  overflow: hidden;
-  margin-bottom: 40px;
-}
-
-.hero-img {
-  width: 100%;
-  object-fit: cover;
-  filter: brightness(80%);
-  max-height: 400px;
-}
-
-.hero-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  text-align: center;
-  font-family: 'Playfair Display', serif;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 20px 40px;
-  border-radius: 12px;
-}
-
-.hero-text h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-}
-
-.hero-text p {
-  font-size: 18px;
-  font-style: italic;
-}
-
     body {
-      <section class="hero">
-  <img src="<section class="hero">
-  <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/refs/heads/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="hero-img">
-  <div class="hero-text">
-    <h1>🌸 Abigaelle Kabelu</h1>
-    <p>“Une lumière douce dans nos vies, un sourire qui inspire.”</p>
-  </div>
-</section>
-" alt="Abigaelle Kabelu" class="hero-img">
-  <div class="hero-text">
-    <h1>🌸 Abigaelle Kabelu</h1>
-    <p>“Une lumière douce dans nos vies, un sourire qui inspire.”</p>
-  </div>
-</section>
-
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       background: linear-gradient(to right, #fffaf0, #ffe4e1);
       color: #333;
       padding: 20px;
@@ -69,14 +22,55 @@
       opacity: 0;
       animation: fadeIn 2s forwards;
     }
+
     @keyframes fadeIn {
       to { opacity: 1; }
     }
+
+    .hero {
+      position: relative;
+      width: 100%;
+      max-height: 400px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .hero-img {
+      width: 100%;
+      object-fit: cover;
+      filter: brightness(80%);
+      max-height: 400px;
+    }
+
+    .hero-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 20px 40px;
+      border-radius: 12px;
+    }
+
+    .hero-text h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .hero-text p {
+      font-size: 18px;
+      font-style: italic;
+    }
+
     h1 {
       color: #d94f70;
       font-size: 2em;
       position: relative;
     }
+
     h1:hover::after {
       content: "« Chaque mot est une lumière dans le cœur. »";
       position: absolute;
@@ -87,30 +81,54 @@
       color: #777;
       margin-top: 5px;
     }
+
     input, textarea {
-      width: 90%; padding: 10px; margin: 10px 0;
-      border-radius: 5px; border: 1px solid #ccc; font-size: 1em;
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1em;
     }
+
     button {
-      padding: 8px 16px; background-color: #d94f70; color: white;
-      border: none; border-radius: 5px; cursor: pointer; margin: 5px;
+      padding: 8px 16px;
+      background-color: #d94f70;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
       transition: transform 0.2s;
     }
+
     button:hover {
       background-color: #c03b5f;
       transform: scale(1.05);
     }
+
     .page {
-      background: #fff; border: 1px solid #ddd; border-radius: 8px;
-      padding: 15px; margin: 10px auto; width: 90%; text-align: left;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px auto;
+      width: 90%;
+      text-align: left;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       animation: slideIn 0.5s ease-out;
     }
+
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    footer { margin-top: 40px; font-size: 0.9em; color: #777; }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #777;
+    }
 
     #musicToggle {
       background-color: #eee;
@@ -118,6 +136,7 @@
       border: 1px solid #d94f70;
       margin-top: 10px;
     }
+
     #musicToggle:hover {
       background-color: #d94f70;
       color: white;
@@ -125,25 +144,40 @@
   </style>
 </head>
 <body>
+
+  <!-- Bannière d’accueil -->
+  <section class="hero">
+    <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="hero-img">
+    <div class="hero-text">
+      <h1>🌸 Abigaelle Kabelu</h1>
+      <p>“Une lumière douce dans nos vies, un sourire qui inspire.”</p>
+    </div>
+  </section>
+
   <h1>📖 Livre des témoignages pour Abigael Kabelu 🎂</h1>
   <p>Écris un mot doux, un souvenir, ou une bénédiction pour elle.</p>
 
+  <!-- Formulaire -->
   <form id="testimonialForm">
     <input type="text" id="name" placeholder="Ton prénom" required />
     <textarea id="message" rows="4" placeholder="Ton message pour Abigael" required></textarea>
     <button type="submit">Ajouter au livre</button>
   </form>
-  <div style="text-align:center; margin-top:20px;">
-  <a href="livre.html" style="color:#a03c6f; font-style:italic; font-size:16px;">
-    📖 Voir le livre complet imprimable
-  </a>
-</div>
 
+  <!-- Lien vers livre.html -->
+  <div style="text-align:center; margin-top:20px;">
+    <a href="livre.html" style="color:#a03c6f; font-style:italic; font-size:16px;">
+      📖 Voir le livre complet imprimable
+    </a>
+  </div>
+
+  <!-- Musique -->
   <button id="musicToggle">🎵 Activer la musique</button>
   <audio id="backgroundMusic" loop>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6b9b7f3e6c.mp3?filename=gentle-piano-ambient-11094.mp3" type="audio/mpeg">
   </audio>
 
+  <!-- Témoignages -->
   <div id="book"></div>
 
   <footer>Conçu par <strong>Gabby Umba</strong> 💻✨</footer>
@@ -211,16 +245,3 @@
       const newMessage = prompt("Modifie ton message :", currentMessage);
       if (newMessage && newMessage.trim().length >= 5) {
         db.collection("testimonials").doc(id).update({ message: newMessage.trim() });
-      } else {
-        alert("Le message doit contenir au moins 5 caractères.");
-      }
-    }
-
-    function deleteMessage(id) {
-      if (confirm("Supprimer ce témoignage ?")) {
-        db.collection("testimonials").doc(id).delete();
-      }
-    }
-  </script>
-</body>
-</html>
