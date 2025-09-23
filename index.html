@@ -233,4 +233,36 @@
           <button onclick="editMessage('${id}', '${message.replace(/'/g, "\\'")}')">Modifier</button>
           <button onclick="deleteMessage('${id}')">Supprimer</button>
         `;
-        book.appendChild(page
+        book.appendChild(page);:
+              });
+    }, error => {
+      console.error("Erreur de récupération :", error);
+      book.innerHTML = "<p>Impossible de charger les témoignages. Vérifie ta connexion ou les règles Firebase.</p>";
+    });
+
+    function editMessage(id, currentMessage) {
+      const newMessage = prompt("Modifie ton message :", currentMessage);
+      if (newMessage && newMessage.trim().length >= 5) {
+        db.collection("testimonials").doc(id).update({ message: newMessage.trim() })
+          .catch(error => {
+            console.error("Erreur de modification :", error);
+            alert("Impossible de modifier le message.");
+          });
+      } else {
+        alert("Le message doit contenir au moins 5 caractères.");
+      }
+    }
+
+    function deleteMessage(id) {
+      if (confirm("Supprimer ce témoignage ?")) {
+        db.collection("testimonials").doc(id).delete()
+          .catch(error => {
+            console.error("Erreur de suppression :", error);
+            alert("Impossible de supprimer le message.");
+          });
+      }
+    }
+  </script>
+</body>
+</html>
+
