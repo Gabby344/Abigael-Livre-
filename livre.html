@@ -3,47 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <title>Livre des témoignages pour Abigael</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Open+Sans&display=swap" rel="stylesheet">
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js"></script>
-  <style>
-    .portrait {
-  width: 160px;
-  border-radius: 50%;
-  display: block;
-  margin: 0 auto 20px;
-  box-shadow: 0 0 20px rgba(255, 192, 203, 0.6);
-}
 
+  <style>
     body {
       background: #fdfaf6;
-      font-family: 'Georgia', serif;
-      color: #333;
+      font-family: 'Open Sans', sans-serif;
+      color: #3a2c2c;
       margin: 0;
       padding: 0;
     }
 
     .page {
       page-break-after: always;
-      max-width: 700px;
+      max-width: 800px;
       margin: 60px auto;
-      padding: 40px;
+      padding: 50px;
       background: #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      animation: fadeIn 1s ease-in-out;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      animation: fadeIn 0.8s ease-in-out;
     }
 
     .page h1, .page h2 {
       text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
       color: #a03c6f;
+      font-size: 28px;
     }
 
     .portrait {
-      width: 160px;
+      width: 180px;
       border-radius: 50%;
       display: block;
       margin: 0 auto 20px;
-      box-shadow: 0 0 20px rgba(255, 192, 203, 0.6);
+      box-shadow: 0 0 30px rgba(255, 192, 203, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .portrait:hover {
+      transform: scale(1.05);
     }
 
     .citation {
@@ -51,10 +57,13 @@
       font-style: italic;
       color: #a03c6f;
       margin-top: 10px;
+      font-size: 18px;
     }
 
     .temoignage {
       margin-top: 30px;
+      border-top: 1px dashed #d9a7c7;
+      padding-top: 20px;
     }
 
     .temoignage p {
@@ -72,18 +81,55 @@
     button {
       display: block;
       margin: 20px auto;
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 16px;
-      background: #a03c6f;
+      background: linear-gradient(to right, #d94c8a, #a03c6f);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #a03c6f, #d94c8a);
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li::before {
+      content: "🌟 ";
+      color: #d94c8a;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+
+      button {
+        display: none;
+      }
+
+      .page {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        page-break-after: always;
+      }
+
+      .portrait {
+        box-shadow: none !important;
+      }
     }
   </style>
 </head>
@@ -91,8 +137,8 @@
 
   <!-- Page de garde -->
   <div class="page">
-    <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/refs/heads/main/abigaelle.jpeg" alt="Abigaelle Kabelu" class="portrait">
-    <h1>📖 Livre des témoignages pour Abigael Kabelu 🎂</h1>
+    <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/images/abigaelle.jpeg" alt="Abigaelle Kabelu" class="portrait">
+    <h1>📖 Livre des témoignages pour Abigael Kabelu 🕊️</h1>
     <p class="citation">“Ce livre est une trace de lumière, un murmure d’amour.”</p>
     <p class="citation">Tout pour notre Abigaelle</p>
   </div>
@@ -101,60 +147,57 @@
   <div id="temoignages-container"></div>
 
   <!-- Bouton d'impression -->
-  <button onclick="window.print()">🖨️ Imprimer le livre</button>
+  <button onclick="setTimeout(() => window.print(), 1000)">📄 Imprimer le livre</button>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyD7hKXv6kU9ZkzZq4KZbKXxZKZKZKZKZKZ",
-    authDomain: "livre-temoignages.firebaseapp.com",
-    projectId: "livre-temoignages",
-    storageBucket: "livre-temoignages.appspot.com",
-    messagingSenderId: "123456789012",
-    appId: "1:123456789012:web:abcdef1234567890abcdef"
-  };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7hKXv6kU9ZkzZq4KZbKXxZKZKZKZKZKZ",
+      authDomain: "livre-temoignages.firebaseapp.com",
+      projectId: "livre-temoignages",
+      storageBucket: "livre-temoignages.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef1234567890abcdef"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  const container = document.getElementById("temoignages-container");
-  const contributeurs = new Set(); // Utilise un Set pour éviter les doublons
+    const container = document.getElementById("temoignages-container");
+    const contributeurs = new Set();
 
-  db.collection("testimonials").orderBy("timestamp", "asc").get().then(snapshot => {
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const page = document.createElement("div");
-      page.className = "page";
+    db.collection("testimonials").orderBy("timestamp", "asc").get().then(snapshot => {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const page = document.createElement("div");
+        page.className = "page";
 
-      page.innerHTML = `
-        <h2>${data.name}</h2>
-        <div class="temoignage">
-          <p>“${data.message}”</p>
-          <p class="date">${new Date(data.timestamp).toLocaleDateString('fr-FR', {
-            day: 'numeric', month: 'long', year: 'numeric'
-          })}</p>
-        </div>
+        page.innerHTML = `
+          <h2>${data.name}</h2>
+          <div class="temoignage">
+            <p>“${data.message}”</p>
+            <p class="date">${new Date(data.timestamp).toLocaleDateString('fr-FR', {
+              day: 'numeric', month: 'long', year: 'numeric'
+            })}</p>
+          </div>
+        `;
+
+        container.appendChild(page);
+        if (data.name && typeof data.name === "string") {
+          contributeurs.add(data.name.trim());
+        }
+      });
+
+      const indexPage = document.createElement("div");
+      indexPage.className = "page";
+      indexPage.innerHTML = `
+        <h2>🌟 Table des contributeurs</h2>
+        <ul style="font-size:18px; line-height:1.6;">
+          ${[...contributeurs].sort().map(nom => `<li>${nom}</li>`).join("")}
+        </ul>
       `;
-
-      container.appendChild(page);
-      if (data.name && typeof data.name === "string") {
-        contributeurs.add(data.name.trim());
-      }
+      container.appendChild(indexPage);
     });
-
-    // Créer la page des contributeurs
-    const indexPage = document.createElement("div");
-    indexPage.className = "page";
-    indexPage.innerHTML = `
-      <h2>🌟 Table des contributeurs</h2>
-      <ul style="font-size:18px; line-height:1.6; padding-left:20px;">
-        ${[...contributeurs].sort().map(nom => `<li>${nom}</li>`).join("")}
-      </ul>
-    `;
-    container.appendChild(indexPage);
-  });
-</script>
-
+  </script>
 
 </body>
 </html>
-
