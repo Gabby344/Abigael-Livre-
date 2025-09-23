@@ -9,26 +9,63 @@
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
 
-  <style>
+   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #fffaf0;
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(to right, #fffaf0, #ffe4e1);
       color: #333;
       padding: 20px;
       text-align: center;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .hero {
+      position: relative;
+      width: 100%;
+      max-height: 400px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .hero-img {
+      width: 100%;
+      object-fit: cover;
+      filter: brightness(80%);
+      max-height: 400px;
+    }
+
+    .hero-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 20px 40px;
+      border-radius: 12px;
+    }
+
+    .hero-text h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .hero-text p {
+      font-size: 18px;
+      font-style: italic;
     }
 
     h1 {
       color: #d94f70;
       font-size: 2em;
-    }
-
-    .abi-photo {
-      width: 100%;
-      max-width: 400px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      position: relative;
     }
 
     input, textarea {
@@ -47,7 +84,13 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 10px;
+      margin: 5px;
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #c03b5f;
+      transform: scale(1.05);
     }
 
     .page {
@@ -58,6 +101,7 @@
       margin: 10px auto;
       width: 90%;
       text-align: left;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     footer {
@@ -65,12 +109,30 @@
       font-size: 0.9em;
       color: #777;
     }
+
+    #musicToggle {
+      background-color: #eee;
+      color: #d94f70;
+      border: 1px solid #d94f70;
+      margin-top: 10px;
+    }
+
+    #musicToggle:hover {
+      background-color: #d94f70;
+      color: white;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Photo d’Abigaelle -->
-  <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="abi-photo">
+  <!-- Bannière d’accueil -->
+  <section class="hero">
+    <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="hero-img">
+    <div class="hero-text">
+      <h1>🌸 Abigaelle Kabelu</h1>
+      <p>“Une lumière douce dans nos vies, un sourire qui inspire.”</p>
+    </div>
+  </section>
 
   <h1>📖 Livre des témoignages pour Abigael Kabelu</h1>
   <p>Écris un mot doux, un souvenir, ou une bénédiction pour elle.</p>
