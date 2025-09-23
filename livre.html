@@ -1,203 +1,106 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Livre des témoignages pour Abigael</title>
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Open+Sans&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Livre imprimable – Témoignages pour Abigael</title>
 
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
 
   <style>
     body {
-      background: #fdfaf6;
-      font-family: 'Open Sans', sans-serif;
-      color: #3a2c2c;
-      margin: 0;
-      padding: 0;
-    }
-
-    .page {
-      page-break-after: always;
+      font-family: 'Georgia', serif;
+      background-color: #fff;
+      color: #333;
+      padding: 40px;
       max-width: 800px;
-      margin: 60px auto;
-      padding: 50px;
-      background: #fff;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      border-radius: 12px;
-      animation: fadeIn 0.8s ease-in-out;
+      margin: auto;
     }
 
-    .page h1, .page h2 {
+    h1 {
       text-align: center;
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-      color: #a03c6f;
-      font-size: 28px;
+      color: #d94f70;
+      margin-bottom: 10px;
     }
 
-    .portrait {
-      width: 180px;
-      border-radius: 50%;
-      display: block;
-      margin: 0 auto 20px;
-      box-shadow: 0 0 30px rgba(255, 192, 203, 0.5);
-      transition: transform 0.3s ease;
-    }
-
-    .portrait:hover {
-      transform: scale(1.05);
-    }
-
-    .citation {
+    .intro {
       text-align: center;
       font-style: italic;
+      margin-bottom: 30px;
+    }
+
+    .testimonial {
+      border-bottom: 1px solid #ccc;
+      padding: 20px 0;
+    }
+
+    .testimonial strong {
       color: #a03c6f;
-      margin-top: 10px;
-      font-size: 18px;
     }
 
-    .temoignage {
-      margin-top: 30px;
-      border-top: 1px dashed #d9a7c7;
-      padding-top: 20px;
-    }
-
-    .temoignage p {
-      font-size: 18px;
-      line-height: 1.6;
-    }
-
-    .date {
-      font-size: 14px;
-      color: #777;
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    button {
+    .photo {
+      width: 100%;
+      max-width: 300px;
       display: block;
-      margin: 20px auto;
-      padding: 12px 24px;
-      font-size: 16px;
-      background: linear-gradient(to right, #d94c8a, #a03c6f);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-
-    button:hover {
-      background: linear-gradient(to right, #a03c6f, #d94c8a);
-    }
-
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    ul li::before {
-      content: "🌟 ";
-      color: #d94c8a;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      margin: 0 auto 20px;
+      border-radius: 12px;
     }
 
     @media print {
-      body {
-        background: white !important;
-        color: black !important;
-      }
-
-      button {
-        display: none;
-      }
-
-      .page {
-        box-shadow: none !important;
-        margin: 0 !important;
-        padding: 20px !important;
-        page-break-after: always;
-      }
-
-      .portrait {
-        box-shadow: none !important;
-      }
+      button { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Page de garde -->
-  <div class="page">
-    <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/images/abigaelle.jpeg" alt="Abigaelle Kabelu" class="portrait">
-    <h1>📖 Livre des témoignages pour Abigael Kabelu 🕊️</h1>
-    <p class="citation">“Ce livre est une trace de lumière, un murmure d’amour.”</p>
-    <p class="citation">Tout pour notre Abigaelle</p>
-  </div>
+  <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="photo">
 
-  <!-- Conteneur des témoignages -->
-  <div id="temoignages-container"></div>
+  <h1>Livre des témoignages</h1>
+  <div class="intro">“Chaque mot est une lumière dans le cœur.”</div>
 
-  <!-- Bouton d'impression -->
-  <button onclick="setTimeout(() => window.print(), 1000)">📄 Imprimer le livre</button>
+  <div id="livre"></div>
+
+  <button onclick="window.print()">🖨️ Imprimer ce livre</button>
 
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyD7hKXv6kU9ZkzZq4KZbKXxZKZKZKZKZKZ",
-      authDomain: "livre-temoignages.firebaseapp.com",
-      projectId: "livre-temoignages",
-      storageBucket: "livre-temoignages.appspot.com",
-      messagingSenderId: "123456789012",
-      appId: "1:123456789012:web:abcdef1234567890abcdef"
+      apiKey: "AIzaSyAuHPWVOkd96xPqKQ_K1cC4n4ihuPfuNFQ",
+      authDomain: "abiga-1718.firebaseapp.com",
+      projectId: "abiga-1718",
+      storageBucket: "abiga-1718.appspot.com",
+      messagingSenderId: "103455679291",
+      appId: "1:103455679291:web:eda13441fedfce226d4d1e"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const container = document.getElementById("temoignages-container");
-    const contributeurs = new Set();
+    const livre = document.getElementById('livre');
 
     db.collection("testimonials").orderBy("timestamp", "asc").get().then(snapshot => {
       snapshot.forEach(doc => {
         const data = doc.data();
-        const page = document.createElement("div");
-        page.className = "page";
+        const name = data.name || "Anonyme";
+        const message = data.message || "(Message vide)";
+        const date = data.timestamp
+          ? new Date(data.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+          : "Date inconnue";
 
-        page.innerHTML = `
-          <h2>${data.name}</h2>
-          <div class="temoignage">
-            <p>“${data.message}”</p>
-            <p class="date">${new Date(data.timestamp).toLocaleDateString('fr-FR', {
-              day: 'numeric', month: 'long', year: 'numeric'
-            })}</p>
-          </div>
+        const div = document.createElement('div');
+        div.className = 'testimonial';
+        div.innerHTML = `
+          <strong>${name}</strong> – ${date}<br>
+          <p>${message}</p>
         `;
-
-        container.appendChild(page);
-        if (data.name && typeof data.name === "string") {
-          contributeurs.add(data.name.trim());
-        }
+        livre.appendChild(div);
       });
-
-      const indexPage = document.createElement("div");
-      indexPage.className = "page";
-      indexPage.innerHTML = `
-        <h2>🌟 Table des contributeurs</h2>
-        <ul style="font-size:18px; line-height:1.6;">
-          ${[...contributeurs].sort().map(nom => `<li>${nom}</li>`).join("")}
-        </ul>
-      `;
-      container.appendChild(indexPage);
+    }).catch(error => {
+      livre.innerHTML = "<p>Impossible de charger les témoignages.</p>";
+      console.error(error);
     });
   </script>
-
 </body>
 </html>
+
