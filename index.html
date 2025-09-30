@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Livre des témoignages pour Abigael</title>
+  <title>The Gift of Words — Livre de témoignages</title>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-storage-compat.js"></script>
 
-   <style>
+  <style>
     body {
       font-family: 'Open Sans', sans-serif;
       background: linear-gradient(to right, #fffaf0, #ffe4e1);
@@ -77,6 +78,11 @@
       font-size: 1em;
     }
 
+    input[type="file"] {
+      border: none;
+      background: #fff0f5;
+    }
+
     button {
       padding: 8px 16px;
       background-color: #d94f70;
@@ -104,22 +110,23 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
+    .photo-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .photo-gallery img {
+      max-width: 100px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+
     footer {
       margin-top: 40px;
       font-size: 0.9em;
       color: #777;
-    }
-
-    #musicToggle {
-      background-color: #eee;
-      color: #d94f70;
-      border: 1px solid #d94f70;
-      margin-top: 10px;
-    }
-
-    #musicToggle:hover {
-      background-color: #d94f70;
-      color: white;
     }
   </style>
 </head>
@@ -134,23 +141,26 @@
     </div>
   </section>
 
-  <h1>📖 THE GIFT OF WORDS pour Abigael Kabelu</h1>
-  <p>Écris un mot doux, un souvenir, ou une bénédiction pour elle.</p>
+  <h1>📖 THE GIFT OF WORDS</h1>
+  <p>Écris un mot doux, un souvenir, ou une bénédiction pour elle. Tu peux aussi ajouter des photos.</p>
 
   <form id="testimonialForm">
     <input type="text" id="name" placeholder="Ton prénom" required />
-    <textarea id="message" rows="4" placeholder="Ton message pour Abigael" required></textarea>
+    <textarea id="message" rows="4" placeholder="Ton message pour Abigaelle" required></textarea>
+    <label for="photoUpload">Ajoute jusqu’à 5 photos (facultatif)</label>
+    <input type="file" id="photoUpload" multiple accept="image/*" />
     <button type="submit">Ajouter au livre</button>
   </form>
-<div style="margin-top: 20px;">
-  <a href="livre.html" style="color:#a03c6f; font-style:italic; font-size:16px;">
-    📖 Voir le livre complet imprimable
-  </a>
-</div>
+
+  <div style="margin-top: 20px;">
+    <a href="livre.html" style="color:#a03c6f; font-style:italic; font-size:16px;">
+      📖 Voir le livre complet imprimable
+    </a>
+  </div>
 
   <div id="book"></div>
 
-  <footer>Conçu par <strong>Gabby Umba</strong></footer>
+  <footer>Conçu amour par <strong>Gabby Umba</strong></footer>
 
   <script>
     const firebaseConfig = {
@@ -164,6 +174,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const storage = firebase.storage();
 
     const form = document.getElementById('testimonialForm');
     const book = document.getElementById('book');
@@ -172,25 +183,51 @@
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
       const message = document.getElementById('message').value.trim();
+      const photoFiles = document.getElementById('photoUpload').files;
 
       if (name.length < 2 || message.length < 5) {
         alert("Merci d’écrire un vrai prénom et un message sincère.");
         return;
       }
 
-      await db.collection("testimonials").add({ name, message, timestamp: Date.now() });
+      const photoURLs = [];
+
+      for (let i = 0; i < Math.min(photoFiles.length, 5); i++) {
+        const file = photoFiles[i];
+        const storageRef = storage.ref().child('photos/' + Date.now() + '_' + file.name);
+        await storageRef.put(file);
+        const url = await storageRef.getDownloadURL();
+        photoURLs.push(url);
+      }
+
+      await db.collection("testimonials").add({
+        name,
+        message,
+        photos: photoURLs,
+        timestamp: Date.now()
+      });
+
       form.reset();
     });
 
-    db.collection("testimonials").onSnapshot(snapshot => {
+    db.collection("testimonials").orderBy("timestamp", "desc").onSnapshot(snapshot => {
       book.innerHTML = "";
       snapshot.forEach(doc => {
         const data = doc.data();
         const page = document.createElement('div');
         page.className = 'page';
+
+        let photosHTML = "";
+        if (data.photos && data.photos.length > 0) {
+          photosHTML = `<div class="photo-gallery">` +
+            data.photos.map(url => `<img src="${url}" alt="Photo" />`).join('') +
+            `</div>`;
+        }
+
         page.innerHTML = `
           <strong>${data.name || "Anonyme"}</strong> écrit :<br>
           <p>${data.message}</p>
+          ${photosHTML}
         `;
         book.appendChild(page);
       });
