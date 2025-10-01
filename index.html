@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Livre des témoignages pour Abigael</title>
@@ -146,7 +148,7 @@
     <a href="livre.html" style="color:#a03c6f; font-style:italic; font-size:16px;">
       📖 Voir le livre complet imprimable
     </a>
-    <button onclick="generatePDF()">📄 Télécharger en PDF</button>
+
   </div>
 
   <div id="book"></div>
@@ -228,7 +230,10 @@
           <p>${data.message}</p>
           ${data.photo ? `<img src="${data.photo}" alt="Photo ajoutée">` : ""}
           <div class="status">${status}</div>
-          <button onclick="shareWhatsApp('${data.message.replace(/'/g, "\\'")}')">📤 Partager sur WhatsApp</button>
+          <button onclick="shareWhatsApp('${data.message.replace(/'/g, "\\'")}')">
+  <i class="fab fa-whatsapp" style="margin-right:8px;"></i> Partager sur WhatsApp
+</button>
+
         `;
         book.appendChild(page);
       });
