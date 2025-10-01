@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Modération – Témoignages pour Abigael</title>
+  <title>Admin – Modération des témoignages</title>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
 
   <style>
@@ -24,7 +25,7 @@
       margin-bottom: 20px;
     }
 
-    .testimonial {
+    .login, .testimonial {
       background: #fff;
       border: 1px solid #ccc;
       border-radius: 8px;
@@ -33,31 +34,47 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    .testimonial img {
-      max-width: 100%;
-      margin-top: 10px;
-      border-radius: 8px;
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
 
     button {
       background-color: #4CAF50;
       color: white;
       border: none;
-      padding: 8px 16px;
+      padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 10px;
     }
 
     button:hover {
       background-color: #45a049;
     }
+
+    .testimonial img {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>🛡️ Modération des témoignages</h1>
-  <div id="adminPanel"></div>
+  <h1>🔐 Connexion Admin</h1>
+  <div class="login" id="loginForm">
+    <input type="email" id="email" placeholder="Email admin" />
+    <input type="password" id="password" placeholder="Mot de passe" />
+    <button onclick="login()">Se connecter</button>
+  </div>
+
+  <div id="adminPanel" style="display:none;">
+    <h1>🛡️ Modération des témoignages</h1>
+  </div>
 
   <script>
     const firebaseConfig = {
@@ -70,32 +87,50 @@
     };
 
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
-    const panel = document.getElementById('adminPanel');
 
-    db.collection("testimonials")
-      .where("approved", "==", false)
-      .orderBy("timestamp", "asc")
-      .get()
-      .then(snapshot => {
-        if (snapshot.empty) {
-          panel.innerHTML = "<p>Aucun témoignage à modérer.</p>";
-          return;
-        }
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const div = document.createElement('div');
-          div.className = 'testimonial';
-          div.innerHTML = `
-            <strong>${data.name || "Anonyme"}</strong><br>
-            <p>${data.message}</p>
-            ${data.photo ? `<img src="${data.photo}" alt="Photo ajoutée">` : ""}
-            <button onclick="approve('${doc.id}')">✅ Approuver</button>
-          `;
-          panel.appendChild(div);
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          document.getElementById("loginForm").style.display = "none";
+          document.getElementById("adminPanel").style.display = "block";
+          loadTestimonials();
+        })
+        .catch(error => {
+          alert("Connexion échouée : " + error.message);
         });
-      });
+    }
+
+    function loadTestimonials() {
+      db.collection("testimonials")
+        .where("approved", "==", false)
+        .orderBy("timestamp", "asc")
+        .get()
+        .then(snapshot => {
+          const panel = document.getElementById("adminPanel");
+          if (snapshot.empty) {
+            panel.innerHTML += "<p>Aucun témoignage à modérer.</p>";
+            return;
+          }
+
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const div = document.createElement('div');
+            div.className = 'testimonial';
+            div.innerHTML = `
+              <strong>${data.name || "Anonyme"}</strong><br>
+              <p>${data.message}</p>
+              ${data.photo ? `<img src="${data.photo}" alt="Photo ajoutée">` : ""}
+              <button onclick="approve('${doc.id}')">✅ Approuver</button>
+            `;
+            panel.appendChild(div);
+          });
+        });
+    }
 
     function approve(id) {
       db.collection("testimonials").doc(id).update({ approved: true })
@@ -104,8 +139,7 @@
           location.reload();
         })
         .catch(error => {
-          console.error("Erreur :", error);
-          alert("Échec de l’approbation.");
+          alert("Erreur : " + error.message);
         });
     }
   </script>
