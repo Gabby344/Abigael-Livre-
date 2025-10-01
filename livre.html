@@ -42,15 +42,6 @@
       color: #a03c6f;
     }
 
-    .testimonial img {
-      max-width: 100%;
-      max-height: 400px;
-      display: block;
-      margin: 15px auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
     .photo {
       width: 100%;
       max-width: 300px;
@@ -83,7 +74,7 @@
 </head>
 <body>
 
-  <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="photo">
+  <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/refs/heads/main/abigaelle.jpeg" alt="Abigaelle Kabelu" class="photo">
 
   <h1>Livre des témoignages</h1>
   <div class="intro">“Chaque mot est une lumière dans le cœur.”</div>
@@ -107,37 +98,27 @@
 
     const livre = document.getElementById('livre');
 
-    db.collection("testimonials")
-      .orderBy("timestamp", "asc")
-      .get()
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const name = data.name || "Anonyme";
-          const message = data.message || "(Message vide)";
-          const photo = data.photo || null;
-          const date = data.timestamp
-            ? new Date(data.timestamp).toLocaleDateString('fr-FR', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-              })
-            : "Date inconnue";
+    db.collection("testimonials").orderBy("timestamp", "asc").get().then(snapshot => {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const name = data.name || "Anonyme";
+        const message = data.message || "(Message vide)";
+        const date = data.timestamp
+          ? new Date(data.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+          : "Date inconnue";
 
-          const div = document.createElement('div');
-          div.className = 'testimonial';
-          div.innerHTML = `
-            <strong>${name}</strong> – ${date}<br>
-            <p>${message}</p>
-            ${photo ? `<img src="${photo}" alt="Photo ajoutée">` : ""}
-          `;
-          livre.appendChild(div);
-        });
-      })
-      .catch(error => {
-        livre.innerHTML = "<p>Impossible de charger les témoignages.</p>";
-        console.error(error);
+        const div = document.createElement('div');
+        div.className = 'testimonial';
+        div.innerHTML = `
+          <strong>${name}</strong> – ${date}<br>
+          <p>${message}</p>
+        `;
+        livre.appendChild(div);
       });
+    }).catch(error => {
+      livre.innerHTML = "<p>Impossible de charger les témoignages.</p>";
+      console.error(error);
+    });
   </script>
 </body>
 </html>
