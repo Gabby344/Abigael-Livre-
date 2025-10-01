@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modération – Témoignages pour Abigael</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #fffaf0;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #d94f70;
+      margin-bottom: 20px;
+    }
+
+    .testimonial {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .testimonial img {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🛡️ Modération des témoignages</h1>
+  <div id="adminPanel"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAuHPWVOkd96xPqKQ_K1cC4n4ihuPfuNFQ",
+      authDomain: "abiga-1718.firebaseapp.com",
+      projectId: "abiga-1718",
+      storageBucket: "abiga-1718.appspot.com",
+      messagingSenderId: "103455679291",
+      appId: "1:103455679291:web:eda13441fedfce226d4d1e"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const panel = document.getElementById('adminPanel');
+
+    db.collection("testimonials")
+      .where("approved", "==", false)
+      .orderBy("timestamp", "asc")
+      .get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          panel.innerHTML = "<p>Aucun témoignage à modérer.</p>";
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const div = document.createElement('div');
+          div.className = 'testimonial';
+          div.innerHTML = `
+            <strong>${data.name || "Anonyme"}</strong><br>
+            <p>${data.message}</p>
+            ${data.photo ? `<img src="${data.photo}" alt="Photo ajoutée">` : ""}
+            <button onclick="approve('${doc.id}')">✅ Approuver</button>
+          `;
+          panel.appendChild(div);
+        });
+      });
+
+    function approve(id) {
+      db.collection("testimonials").doc(id).update({ approved: true })
+        .then(() => {
+          alert("Témoignage approuvé !");
+          location.reload();
+        })
+        .catch(error => {
+          console.error("Erreur :", error);
+          alert("Échec de l’approbation.");
+        });
+    }
+  </script>
+</body>
+</html>
