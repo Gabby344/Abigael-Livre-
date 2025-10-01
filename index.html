@@ -9,6 +9,10 @@
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-storage-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Font manuscrite -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
 
   <style>
     body {
@@ -80,14 +84,27 @@
     }
 
     .page {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 10px auto;
+      font-family: 'Dancing Script', cursive;
+      background: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+      background-size: cover;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      padding: 25px;
+      margin: 20px auto;
       width: 90%;
       text-align: left;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeSlideIn 0.8s ease forwards;
+      animation-delay: calc(var(--i) * 0.1s);
+    }
+
+    @keyframes fadeSlideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .page img {
@@ -133,6 +150,7 @@
     <a href="livre.html" style="color:#a03c6f; font-style:italic; font-size:16px;">
       📖 Voir le livre complet imprimable
     </a>
+    <button onclick="generatePDF()">📄 Télécharger en PDF</button>
   </div>
 
   <div id="book"></div>
@@ -195,22 +213,55 @@
       form.reset();
     });
 
+    function shareWhatsApp(message) {
+      const encoded = encodeURIComponent(`Message pour Abigael :\n\n${message}`);
+      window.open(`https://wa.me/?text=${encoded}`, '_blank');
+    }
+
     db.collection("testimonials").orderBy("timestamp", "desc").onSnapshot(snapshot => {
       book.innerHTML = "";
+      let index = 0;
       snapshot.forEach(doc => {
         const data = doc.data();
         const status = data.approved ? "✅ Approuvé" : "⏳ En attente";
         const page = document.createElement('div');
         page.className = 'page';
+        page.style.setProperty('--i', index++);
         page.innerHTML = `
           <strong>${data.name || "Anonyme"}</strong> écrit :<br>
           <p>${data.message}</p>
           ${data.photo ? `<img src="${data.photo}" alt="Photo ajoutée">` : ""}
           <div class="status">${status}</div>
+          <button onclick="shareWhatsApp('${data.message.replace(/'/g, "\\'")}')">📤 Partager sur WhatsApp</button>
         `;
-        book.appendChild(page);
+                book.appendChild(page);
       });
     });
+
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 20;
+
+      const snapshot = await db.collection("testimonials").orderBy("timestamp", "asc").get();
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const name = data.name || "Anonyme";
+        const message = data.message || "";
+        const status = data.approved ? "Approuvé" : "En attente";
+
+        const text = `${name} (${status})\n${message}\n\n`;
+        doc.text(text, 10, y);
+        y += 30;
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      });
+
+      doc.save("livre_abigael.pdf");
+    }
   </script>
 </body>
 </html>
+
