@@ -123,6 +123,23 @@
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
 
+    .whatsapp-button {
+      background-color: #25D366;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .whatsapp-button img {
+      height: 18px;
+    }
+
     footer {
       margin-top: 40px;
       font-size: 0.9em;
@@ -132,7 +149,6 @@
 </head>
 <body>
 
-  <!-- Bannière d’accueil -->
   <section class="hero">
     <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="hero-img">
     <div class="hero-text">
@@ -210,6 +226,11 @@
       form.reset();
     });
 
+    function shareWhatsApp(message) {
+      const encoded = encodeURIComponent(`Message pour Abigael :\n\n${message}`);
+      window.open(`https://wa.me/?text=${encoded}`, '_blank');
+    }
+
     db.collection("testimonials").orderBy("timestamp", "desc").onSnapshot(snapshot => {
       book.innerHTML = "";
       snapshot.forEach(doc => {
@@ -228,6 +249,10 @@
           <strong>${data.name || "Anonyme"}</strong> écrit :<br>
           <p>${data.message}</p>
           ${photosHTML}
+          <button class="whatsapp-button" onclick="shareWhatsApp('${data.message.replace(/'/g, "\\'")}')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+            Partager sur WhatsApp
+          </button>
         `;
         book.appendChild(page);
       });
