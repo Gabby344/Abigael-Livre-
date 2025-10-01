@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Livre des témoignages pour Abigael</title>
+  <title>The Gift of Words — Livre de témoignages</title>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-storage-compat.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     body {
@@ -18,13 +17,17 @@
       color: #333;
       padding: 20px;
       text-align: center;
+      opacity: 0;
       animation: fadeIn 2s forwards;
     }
 
-    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
 
     .hero {
       position: relative;
+      width: 100%;
       max-height: 400px;
       overflow: hidden;
       margin-bottom: 40px;
@@ -50,6 +53,22 @@
       border-radius: 12px;
     }
 
+    .hero-text h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .hero-text p {
+      font-size: 18px;
+      font-style: italic;
+    }
+
+    h1 {
+      color: #d94f70;
+      font-size: 2em;
+      position: relative;
+    }
+
     input, textarea {
       width: 90%;
       padding: 10px;
@@ -60,18 +79,18 @@
     }
 
     input[type="file"] {
-      background: #f9f9f9;
       border: none;
+      background: #fff0f5;
     }
 
     button {
-      padding: 10px 20px;
+      padding: 8px 16px;
       background-color: #d94f70;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 10px;
+      margin: 5px;
       transition: transform 0.2s;
     }
 
@@ -82,30 +101,26 @@
 
     .page {
       background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      padding: 25px;
-      margin: 20px auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px auto;
       width: 90%;
       text-align: left;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeSlideIn 0.8s ease forwards;
-      animation-delay: calc(var(--i) * 0.1s);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    @keyframes fadeSlideIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .page img {
-      max-width: 100%;
-      border-radius: 8px;
+    .photo-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-top: 10px;
+    }
+
+    .photo-gallery img {
+      max-width: 100px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
 
     footer {
@@ -113,27 +128,11 @@
       font-size: 0.9em;
       color: #777;
     }
-
-    .whatsapp-button {
-      background-color: #25D366;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    .whatsapp-button img {
-      height: 20px;
-    }
   </style>
 </head>
 <body>
 
+  <!-- Bannière d’accueil -->
   <section class="hero">
     <img src="https://raw.githubusercontent.com/Gabby344/Abigael-Livre-/main/image/abi.jpeg" alt="Abigaelle Kabelu" class="hero-img">
     <div class="hero-text">
@@ -142,13 +141,14 @@
     </div>
   </section>
 
-  <h1>📖 THE GIFT OF WORDS pour Abigael Kabelu</h1>
-  <p>Écris un mot doux, un souvenir, ou une bénédiction pour elle. Tu peux aussi ajouter une photo.</p>
+  <h1>📖 THE GIFT OF WORDS</h1>
+  <p>Écris un mot doux, un souvenir, ou une bénédiction pour elle. Tu peux aussi ajouter des photos.</p>
 
   <form id="testimonialForm">
     <input type="text" id="name" placeholder="Ton prénom" required />
-    <textarea id="message" rows="4" placeholder="Ton message pour Abigael" required></textarea>
-    <input type="file" id="photo" accept="image/jpeg,image/png" />
+    <textarea id="message" rows="4" placeholder="Ton message pour Abigaelle" required></textarea>
+    <label for="photoUpload">Ajoute jusqu’à 5 photos (facultatif)</label>
+    <input type="file" id="photoUpload" multiple accept="image/*" />
     <button type="submit">Ajouter au livre</button>
   </form>
 
@@ -156,12 +156,11 @@
     <a href="livre.html" style="color:#a03c6f; font-style:italic; font-size:16px;">
       📖 Voir le livre complet imprimable
     </a>
-    <button onclick="generatePDF()">📄 Télécharger en PDF</button>
   </div>
 
   <div id="book"></div>
 
-  <footer>Conçu par <strong>Gabby Umba</strong></footer>
+  <footer>Conçu avec amour par <strong>Gabby Umba</strong></footer>
 
   <script>
     const firebaseConfig = {
@@ -184,81 +183,55 @@
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
       const message = document.getElementById('message').value.trim();
-      const file = document.getElementById('photo').files[0];
+      const photoFiles = document.getElementById('photoUpload').files;
 
       if (name.length < 2 || message.length < 5) {
         alert("Merci d’écrire un vrai prénom et un message sincère.");
         return;
       }
 
-      let photoURL = null;
-      if (file) {
-        if (file.size > 2 * 1024 * 1024) {
-          alert("Image trop lourde (max 2 Mo).");
-          return;
-        }
-        const storageRef = storage.ref(`photos/${Date.now()}_${file.name}`);
-        try {
-          await storageRef.put(file);
-          photoURL = await storageRef.getDownloadURL();
-        } catch (error) {
-          console.error("Erreur d’upload :", error);
-          alert("L’envoi de la photo a échoué.");
-        }
+      const photoURLs = [];
+
+      for (let i = 0; i < Math.min(photoFiles.length, 5); i++) {
+        const file = photoFiles[i];
+        const storageRef = storage.ref().child('photos/' + Date.now() + '_' + file.name);
+        await storageRef.put(file);
+        const url = await storageRef.getDownloadURL();
+        photoURLs.push(url);
       }
 
       await db.collection("testimonials").add({
         name,
         message,
-        photo: photoURL,
+        photos: photoURLs,
         timestamp: Date.now()
       });
 
-      alert("Message envoyé ! Il est maintenant visible dans le livre.");
       form.reset();
     });
 
-    function shareWhatsApp(message) {
-      const encoded = encodeURIComponent(`Message pour Abigael :\n\n${message}`);
-      window.open(`https://wa.me/?text=${encoded}`, '_blank');
-    }
-
     db.collection("testimonials").orderBy("timestamp", "desc").onSnapshot(snapshot => {
       book.innerHTML = "";
-      let index = 0;
       snapshot.forEach(doc => {
         const data = doc.data();
         const page = document.createElement('div');
         page.className = 'page';
-        page.style.setProperty('--i', index++);
+
+        let photosHTML = "";
+        if (data.photos && data.photos.length > 0) {
+          photosHTML = `<div class="photo-gallery">` +
+            data.photos.map(url => `<img src="${url}" alt="Photo" />`).join('') +
+            `</div>`;
+        }
+
         page.innerHTML = `
           <strong>${data.name || "Anonyme"}</strong> écrit :<br>
           <p>${data.message}</p>
-          ${data.photo ? `<img src="${data.photo}" alt="Photo ajoutée">` : ""}
-          <button class="whatsapp-button" onclick="shareWhatsApp('${data.message.replace(/'/g, "\\'")}')">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-            Partager sur WhatsApp
-          </button>
+          ${photosHTML}
         `;
         book.appendChild(page);
       });
     });
-
-    async function generatePDF() {
-      const { jsPDF } = window.jspdf;
-              const message = data.message || "";
-        const text = `${name}\n${message}\n\n`;
-        doc.text(text, 10, y);
-        y += 30;
-        if (y > 270) {
-          doc.addPage();
-          y = 20;
-        }
-      });
-
-      doc.save("livre_abigael.pdf");
-    }
   </script>
 </body>
 </html>
-
