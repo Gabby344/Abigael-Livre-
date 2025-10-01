@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Livre des témoignages pour Abigael</title>
@@ -83,7 +81,6 @@
     }
 
     .page {
-      font-family: 'Open Sans', sans-serif;
       background: #fff;
       border: 1px solid #ccc;
       border-radius: 12px;
@@ -111,16 +108,27 @@
       margin-top: 10px;
     }
 
-    .status {
-      font-size: 0.9em;
-      color: #777;
-      margin-top: 5px;
-    }
-
     footer {
       margin-top: 40px;
       font-size: 0.9em;
       color: #777;
+    }
+
+    .whatsapp-button {
+      background-color: #25D366;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .whatsapp-button img {
+      height: 20px;
     }
   </style>
 </head>
@@ -148,7 +156,7 @@
     <a href="livre.html" style="color:#a03c6f; font-style:italic; font-size:16px;">
       📖 Voir le livre complet imprimable
     </a>
-
+    <button onclick="generatePDF()">📄 Télécharger en PDF</button>
   </div>
 
   <div id="book"></div>
@@ -203,11 +211,10 @@
         name,
         message,
         photo: photoURL,
-        approved: false,
         timestamp: Date.now()
       });
 
-      alert("Message envoyé ! Il sera visible après validation.");
+      alert("Message envoyé ! Il est maintenant visible dans le livre.");
       form.reset();
     });
 
@@ -221,7 +228,6 @@
       let index = 0;
       snapshot.forEach(doc => {
         const data = doc.data();
-        const status = data.approved ? "✅ Approuvé" : "⏳ En attente";
         const page = document.createElement('div');
         page.className = 'page';
         page.style.setProperty('--i', index++);
@@ -229,11 +235,10 @@
           <strong>${data.name || "Anonyme"}</strong> écrit :<br>
           <p>${data.message}</p>
           ${data.photo ? `<img src="${data.photo}" alt="Photo ajoutée">` : ""}
-          <div class="status">${status}</div>
-          <button onclick="shareWhatsApp('${data.message.replace(/'/g, "\\'")}')">
-  <i class="fab fa-whatsapp" style="margin-right:8px;"></i> Partager sur WhatsApp
-</button>
-
+          <button class="whatsapp-button" onclick="shareWhatsApp('${data.message.replace(/'/g, "\\'")}')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+            Partager sur WhatsApp
+          </button>
         `;
         book.appendChild(page);
       });
@@ -241,17 +246,8 @@
 
     async function generatePDF() {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      let y = 20;
-
-      const snapshot = await db.collection("testimonials").orderBy("timestamp", "asc").get();
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        const name = data.name || "Anonyme";
-                const message = data.message || "";
-        const status = data.approved ? "Approuvé" : "En attente";
-
-        const text = `${name} (${status})\n${message}\n\n`;
+              const message = data.message || "";
+        const text = `${name}\n${message}\n\n`;
         doc.text(text, 10, y);
         y += 30;
         if (y > 270) {
