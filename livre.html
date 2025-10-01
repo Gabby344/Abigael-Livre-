@@ -108,7 +108,6 @@
     const livre = document.getElementById('livre');
 
     db.collection("testimonials")
-      .where("approved", "==", true)
       .orderBy("timestamp", "asc")
       .get()
       .then(snapshot => {
